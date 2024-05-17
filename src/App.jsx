@@ -1,25 +1,39 @@
+import { useState } from "react";
 import styles from "./App.module.css";
 import { Form } from "./components/form/Form";
 import { TodoItem } from "./components/todoItem/TodoItem";
-
-function getSubheading(numberOfTasks) {
-  switch (true) {
-    case numberOfTasks === 0:
-      return "Brak zadań";
-    case numberOfTasks === 1:
-      return "1 zadanie";
-    case numberOfTasks > 1 && numberOfTasks < 5:
-      return `${numberOfTasks} zadania`;
-    default:
-      return `${numberOfTasks} zadań`;
-  }
-}
+import { getSubheading } from "./utils/getSubheading";
 
 function App() {
-  const todos = [
+  const [isFormShown, setIsFormShown] = useState(false);
+  const [todos, setTodos] = useState([
     { name: "Zapłacić rachunki", done: false, id: 1 },
     { name: "Wyrzucić śmieci", done: true, id: 2 },
-  ];
+  ]);
+
+  function addItem(newTodoName) {
+    setTodos((prevTodos) => [
+      ...prevTodos,
+      {
+        name: newTodoName,
+        done: false,
+        id: prevTodos.length > 0 ? prevTodos.at(-1).id + 1 : 0,
+      },
+    ]);
+    setIsFormShown(false);
+  }
+
+  function deleteItem(id) {
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  }
+
+  function finishItem(id) {
+    setTodos((prevTodos) => {
+      return prevTodos.map((todo) => {
+        return todo.id === id ? { ...todo, done: true } : todo;
+      });
+    });
+  }
 
   return (
     <div className={styles.container}>
@@ -28,12 +42,27 @@ function App() {
           <h1>Do zrobienia</h1>
           <h2>{getSubheading(todos.length)}</h2>
         </div>
-        <button className={styles.button}>+</button>
+        {!isFormShown && (
+          <button
+            onClick={() => setIsFormShown(true)}
+            className={styles.button}
+          >
+            +
+          </button>
+        )}
       </header>
-      <Form />
+      {isFormShown && (
+        <Form onFormSubmit={(newTodoName) => addItem(newTodoName)} />
+      )}
       <ul>
         {todos.map(({ id, name, done }) => (
-          <TodoItem key={id} name={name} done={done} />
+          <TodoItem
+            key={id}
+            name={name}
+            done={done}
+            onDeleteButtonClick={() => deleteItem(id)}
+            onDoneButtonClick={() => finishItem(id)}
+          />
         ))}
       </ul>
     </div>
