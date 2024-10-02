@@ -20,10 +20,6 @@ export function appReducer(state, action) {
 				}),
 			};
 		case "add":
-			const newId =
-				state.todos.length > 0
-					? Math.max(...state.todos.map((todo) => todo.id)) + 1
-					: 0;
 			return {
 				isFormShown: false,
 				todos: [
@@ -31,7 +27,10 @@ export function appReducer(state, action) {
 					{
 						name: action.newTodoName,
 						done: false,
-						id: newId,
+						id:
+							state.todos.length > 0
+								? Math.max(...state.todos.map((todo) => todo.id)) + 1
+								: 0,
 					},
 				],
 			};

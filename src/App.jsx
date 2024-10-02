@@ -1,4 +1,4 @@
-import { useState, useReducer } from "react";
+import { useReducer } from "react";
 import styles from "./App.module.css";
 import { Form } from "./components/form/Form";
 import { TodoItem } from "./components/todoItem/TodoItem";
